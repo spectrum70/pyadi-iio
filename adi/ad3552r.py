@@ -47,7 +47,7 @@ class ad3552r(tx, context_manager, attribute):
     def __init__(self, uri="", device_name=""):
 
         context_manager.__init__(self, uri, self._device_name)
-        compatible_parts = ["axi-ad3552r-0", "axi-ad3552r-1", "axi-ad3552r"]
+        compatible_parts = ["ad3552r", "axi-ad3552r-0", "axi-ad3552r-1", "axi-ad3552r"]
 
         self._ctrl = None
 
@@ -70,15 +70,6 @@ class ad3552r(tx, context_manager, attribute):
             self.channel.append(self._channel(self._ctrl, name))
 
         tx.__init__(self)
-
-    @property
-    def sample_rate(self):
-        """Sample rate of the DAC"""
-        return self._get_iio_dev_attr("sampling_frequency", self._txdac)
-
-    @sample_rate.setter
-    def sample_rate(self, value):
-        self._set_iio_dev_attr("sampling_frequency", value, self._txdac)
 
     @property
     def input_source(self):
@@ -114,6 +105,15 @@ class ad3552r(tx, context_manager, attribute):
         def __init__(self, ctrl, channel_name):
             self.name = channel_name
             self._ctrl = ctrl
+
+        @property
+        def sample_rate(self):
+            """Sample rate of the DAC"""
+            return self._get_iio_attr(self.name, "sampling_frequency", True)
+
+        @sample_rate.setter
+        def sample_rate(self, value):
+            self._set_iio_attr(self.name, "sampling_frequency", True, value)
 
         @property
         def raw(self):
